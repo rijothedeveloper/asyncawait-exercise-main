@@ -3,13 +3,11 @@ const addButton = document.getElementById("add");
 const multiForm = document.getElementById("multiNumber");
 const fourFactForm = document.getElementById("four-fact-form")
 
-function showNumberFact(number) {
+async function showNumberFact(number) {
     const factSession = document.getElementById("fact-session");
     clearElement(factSession);
-    factPromise = axios.get(`http://numbersapi.com/${number}?json`)
-factPromise
-        .then(response => addFactPara(response.data.text, factSession))
-        .catch(error => addFactPara(error, factSession))
+    response = await axios.get(`http://numbersapi.com/${number}?json`)
+    addFactPara(response.data.text, factSession)
 }
 
 function addFactToDom(data) {
@@ -63,7 +61,7 @@ function clearElement(element){
     element.innerText = "";
 }
 
-multiForm.addEventListener("submit", event => {
+multiForm.addEventListener("submit", async function(event) {
     event.preventDefault()
     const inputs = document.getElementsByName("numberArray")
     factNoPromises = []
@@ -72,38 +70,25 @@ multiForm.addEventListener("submit", event => {
         factNoPromises.push(axios.get(`http://numbersapi.com/${input.value}?json`))
     }
     const fourfactSession = document.getElementById("facts-session");
-    Promise.all(factNoPromises)
-                            .then(response => showMultiFormFacts(response))
-                            .catch(err => console.log(err))
-
-
+    response = await Promise.all(factNoPromises)
+    showMultiFormFacts(response)
 
 })
 
-fourFactForm.addEventListener("submit", event => {
+fourFactForm.addEventListener("submit", async event => {
     event.preventDefault();
     const fourfactSession = document.getElementById("fourfact-session");
     clearElement(fourfactSession);
     const number = document.getElementById("fournumberFact").value
-    const promise = axios.get(`http://numbersapi.com/${number}?json`)
-    promise
-    .then(response => {
-        addFactPara(response.data.text, fourfactSession);
-        return axios.get(`http://numbersapi.com/${number}?json`)
-    })
-    .then(response => {
-        addFactPara(response.data.text, fourfactSession);
-        return axios.get(`http://numbersapi.com/${number}?json`)
-    })
-    .then(response => {
-        addFactPara(response.data.text, fourfactSession);
-        return axios.get(`http://numbersapi.com/${number}?json`)
-    })
-    .then(response => {
-        addFactPara(response.data.text, fourfactSession);
-        return axios.get(`http://numbersapi.com/${number}?json`)
-    })
-    .catch(error => console.log(error))
+    const res1 = await axios.get(`http://numbersapi.com/${number}?json`)
+    const res2 = await axios.get(`http://numbersapi.com/${number}?json`)
+    const res3 = await axios.get(`http://numbersapi.com/${number}?json`)
+    const res4 = await axios.get(`http://numbersapi.com/${number}?json`)
+
+    addFactPara(res1.data.text, fourfactSession);
+    addFactPara(res2.data.text, fourfactSession);
+    addFactPara(res3.data.text, fourfactSession);
+    addFactPara(res4.data.text, fourfactSession);
 
 })
 
